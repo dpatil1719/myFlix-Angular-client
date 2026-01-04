@@ -8,7 +8,7 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 // ✅ Your hosted API base URL (trailing slash kept)
-const apiUrl = 'https://fierce-beach-67482-2c91e337192e.herokuapp.com/';
+const apiUrl = '/api/';
 
 @Injectable({ providedIn: 'root' })
 export class FetchApiDataService {

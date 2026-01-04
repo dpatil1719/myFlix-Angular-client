@@ -1,0 +1,13 @@
+<h1>{{ title }}</h1>
+
+<p>
+  Movies API check:
+  <ng-container *ngIf="moviesCount !== null; else loading">
+    <strong>{{ moviesCount }}</strong> movies returned.
+  </ng-container>
+  <ng-template #loading>Loading…</ng-template>
+</p>
+
+<p *ngIf="moviesError">Error: {{ moviesError }}</p>
+
+<p>Login test status: {{ loginStatus }}</p>

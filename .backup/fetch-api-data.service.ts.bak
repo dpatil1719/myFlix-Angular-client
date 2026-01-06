@@ -1,0 +1,50 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class FetchApiDataService {
+  // Use the proxy: /api/*  ->  your Heroku app
+  private apiUrl = '/api/';
+
+  constructor(private http: HttpClient) {}
+
+  // ---- Registration (kept working) ----
+  public userRegistration(userDetails: any): Observable<any> {
+    return this.http.post(this.apiUrl + 'users', userDetails).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // ---- Login (new/clean) ----
+  public userLogin(credentials: { Username: string; Password: string }): Observable<any> {
+    return this.http.post(this.apiUrl + 'login', credentials).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // ---- Example movies fetch (token optional here; UI can call after login) ----
+  public getAllMovies(token?: string): Observable<any> {
+    const headers = token ? new HttpHeaders({ Authorization: 'Bearer ' + token }) : undefined;
+    return this.http.get(this.apiUrl + 'movies', { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // Human-friendly error text for snackbars
+  public messageFromError(err: any): string {
+    if (!err) return 'Something went wrong.';
+    if (err.error) {
+      if (typeof err.error === 'string') return err.error;
+      if (typeof err.error === 'object') {
+        if (err.error.message) return err.error.message;
+        if (err.error.error) return err.error.error;
+      }
+    }
+    if (err.message) return err.message;
+    return 'Something went wrong.';
+  }
+
+  private handleError = (err: HttpErrorResponse) => throwError(() => err);
+}

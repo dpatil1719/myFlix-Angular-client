@@ -1,0 +1,47 @@
+import { Component, Optional } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { FetchApiDataService } from '../fetch-api-data.service';
+
+@Component({
+  selector: 'app-user-login-form',
+  standalone: true,
+  imports: [
+    CommonModule, FormsModule,
+    MatFormFieldModule, MatInputModule, MatButtonModule, MatSnackBarModule, MatCardModule, MatDialogModule
+  ],
+  templateUrl: './user-login-form.component.html',
+  styleUrls: ['./user-login-form.component.scss']
+})
+export class UserLoginFormComponent {
+  userData = { Username: '', Password: '' };
+  loading = false;
+
+  constructor(
+    private api: FetchApiDataService,
+    private snack: MatSnackBar,
+    @Optional() private dialogRef?: MatDialogRef<UserLoginFormComponent>
+  ) {}
+
+  login(): void {
+    if (this.loading) return;
+    this.loading = true;
+    this.api.userLogin(this.userData).subscribe({
+      next: () => {
+        this.loading = false;
+        this.snack.open('Logged in!', 'OK', { duration: 2000 });
+        this.dialogRef?.close(true);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.snack.open(this.api.messageFromError(err), 'OK', { duration: 3500 });
+      }
+    });
+  }
+}

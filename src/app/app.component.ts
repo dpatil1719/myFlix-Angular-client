@@ -1,38 +1,27 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FetchApiDataService } from './fetch-api-data.service';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+
+import { UserRegistrationFormComponent } from './user-registration-form/user-registration-form.component';
+import { UserLoginFormComponent } from './user-login-form/user-login-form.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <h1>myFlix-Angular-client</h1>
-    <p>Movies API check: {{ moviesStatus }}</p>
-    <p>Login test status: {{ loginStatus }}</p>
-  `,
+  imports: [MatButtonModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  private api = inject(FetchApiDataService);
-  private cdr = inject(ChangeDetectorRef);
+  title = 'myFlix-Angular-client';
 
-  moviesStatus = 'Loading…';
-  loginStatus = 'idle';
+  constructor(public dialog: MatDialog) {}
 
-  ngOnInit() {
-    this.api.getAllMovies().subscribe({
-      next: (m) => {
-        console.log('movies ok', m);
-        this.moviesStatus = `OK (${Array.isArray(m) ? m.length : '?'} items)`;
-        this.cdr.detectChanges(); // ensure UI updates immediately
-      },
-      error: (err) => {
-        console.error('movies error', err);
-        const code = err?.status ? `${err.status} ` : '';
-        const msg = err?.message || (err?.error && JSON.stringify(err.error)) || String(err);
-        this.moviesStatus = `Error: ${code}${msg}`;
-        this.cdr.detectChanges();
-      },
-    });
+  openUserRegistrationDialog(): void {
+    this.dialog.open(UserRegistrationFormComponent, { width: '280px' });
+  }
+
+  openUserLoginDialog(): void {
+    this.dialog.open(UserLoginFormComponent, { width: '280px' });
   }
 }

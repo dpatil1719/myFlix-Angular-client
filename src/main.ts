@@ -1,12 +1,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { importProvidersFrom } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 import { AppComponent } from './app/app.component';
-import { appConfig } from './app/app.config';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
-  ...appConfig,
   providers: [
-    ...(appConfig.providers || []),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(),
+    provideAnimations(),
+    importProvidersFrom(MatDialogModule, MatSnackBarModule),
   ],
 }).catch((err) => console.error(err));

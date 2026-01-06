@@ -1,8 +1,8 @@
 {
   "/api": {
-    "target": "https://fierce-beach-67482-2c91e337192e.herokuapp.com",
-    "secure": true,
+    "target": "http://localhost:3000",
+    "secure": false,
     "changeOrigin": true,
-    "pathRewrite": { "^/api": "" }
+    "logLevel": "warn"
   }
 }

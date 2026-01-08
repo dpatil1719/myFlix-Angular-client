@@ -40,12 +40,12 @@ export class UserRegistrationFormComponent {
   ) {}
 
   registerUser(): void {
-    // IMPORTANT: map frontend fields to backend-expected keys
+    // ✅ Send the exact keys your backend expects
     const payload = {
-      username: this.userData.Username,
-      password: this.userData.Password,
-      email: this.userData.Email,
-      birthday: this.userData.Birthday || null
+      Username: this.userData.Username,
+      Password: this.userData.Password,
+      Email: this.userData.Email,
+      Birthday: this.userData.Birthday || null
     };
 
     this.fetchApiData.userRegistration(payload).subscribe({
@@ -56,9 +56,8 @@ export class UserRegistrationFormComponent {
         });
       },
       error: (err: any) => {
-        this.snackBar.open(err?.message || 'Registration failed', 'OK', {
-          duration: 2000
-        });
+        const msg = err?.error || err?.message || 'Registration failed';
+        this.snackBar.open(msg, 'OK', { duration: 3000 });
       }
     });
   }

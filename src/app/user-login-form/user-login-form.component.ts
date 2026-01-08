@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 import { FetchApiDataService } from '../fetch-api-data.service';
 
@@ -17,6 +18,7 @@ import { FetchApiDataService } from '../fetch-api-data.service';
   imports: [
     CommonModule,
     FormsModule,
+    MatSnackBarModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -34,7 +36,8 @@ export class UserLoginFormComponent {
   constructor(
     public fetchApiData: FetchApiDataService,
     public dialogRef: MatDialogRef<UserLoginFormComponent>,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   loginUser(): void {
@@ -44,16 +47,18 @@ export class UserLoginFormComponent {
     };
 
     this.fetchApiData.userLogin(payload).subscribe({
-      next: () => {
+      next: (result: any) => {
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+
         this.dialogRef.close();
-        this.snackBar.open('Login successful!', 'OK', {
-          duration: 2000
-        });
+        this.snackBar.open('Login successful!', 'OK', { duration: 2000 });
+
+        this.router.navigate(['movies']);
       },
       error: (err: any) => {
-        this.snackBar.open(err.message || 'Login failed', 'OK', {
-          duration: 2000
-        });
+        const msg = err?.error || err?.message || 'Login failed';
+        this.snackBar.open(msg, 'OK', { duration: 3000 });
       }
     });
   }

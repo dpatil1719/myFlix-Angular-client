@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
-// IMPORTANT: backend routes are NOT prefixed with /api
 const apiUrl = 'http://localhost:3000/';
 
 @Injectable({
@@ -12,46 +11,38 @@ const apiUrl = 'http://localhost:3000/';
 export class FetchApiDataService {
   constructor(private http: HttpClient) {}
 
-  private getToken(): string {
-    return localStorage.getItem('token') || '';
+  public userRegistration(userDetails: any): Observable<any> {
+    return this.http
+      .post(apiUrl + 'users', userDetails)
+      .pipe(catchError(this.handleError<any>));
   }
 
-  private authHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: 'Bearer ' + this.getToken(),
-    });
+  public userLogin(userDetails: any): Observable<any> {
+    return this.http
+      .post(apiUrl + 'login', userDetails)
+      .pipe(catchError(this.handleError<any>));
   }
 
-  private handleError(error: HttpErrorResponse): Observable<never> {
+  public getAllMovies(): Observable<any[]> {
+    const token = localStorage.getItem('token') || '';
+    return this.http
+      .get<any[]>(apiUrl + 'movies', {
+        headers: new HttpHeaders({ Authorization: 'Bearer ' + token })
+      })
+      .pipe(catchError(this.handleError<any[]>));
+  }
+
+  public editUser(username: string, userDetails: any): Observable<any> {
+    const token = localStorage.getItem('token') || '';
+    return this.http
+      .put(apiUrl + 'users/' + username, userDetails, {
+        headers: new HttpHeaders({ Authorization: 'Bearer ' + token })
+      })
+      .pipe(catchError(this.handleError<any>));
+  }
+
+  private handleError<T>(error: any): Observable<T> {
     console.error('API error:', error);
-    const message =
-      typeof error.error === 'string'
-        ? error.error
-        : (error.error?.message || 'Something went wrong; please try again later.');
-    return throwError(() => new Error(message));
-  }
-
-  // ===== Auth =====
-  userRegistration(userDetails: any): Observable<any> {
-    return this.http.post(apiUrl + 'users', userDetails).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  userLogin(userDetails: any): Observable<any> {
-    return this.http.post(apiUrl + 'login', userDetails).pipe(
-      tap((result: any) => {
-        localStorage.setItem('user', JSON.stringify(result.user));
-        localStorage.setItem('token', result.token);
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  // ===== Movies =====
-  getAllMovies(): Observable<any> {
-    return this.http.get(apiUrl + 'movies', {
-      headers: this.authHeaders()
-    }).pipe(catchError(this.handleError));
+    return throwError(() => error);
   }
 }

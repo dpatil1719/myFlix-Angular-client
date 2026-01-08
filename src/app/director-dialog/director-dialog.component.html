@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>{{ data?.Name }}</h2>
+
+<mat-dialog-content>
+  <p><strong>Bio:</strong> {{ data?.Bio }}</p>
+  <p *ngIf="data?.Birth"><strong>Born:</strong> {{ data?.Birth }}</p>
+  <p *ngIf="data?.Death"><strong>Died:</strong> {{ data?.Death }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

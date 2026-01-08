@@ -32,7 +32,6 @@ export class MovieCardComponent implements OnInit {
   isLoading = false;
   errorMsg = '';
 
-  // inline placeholder (prevents broken image icons)
   private readonly placeholder =
     'data:image/svg+xml;charset=UTF-8,' +
     encodeURIComponent(`
@@ -105,24 +104,23 @@ export class MovieCardComponent implements OnInit {
     movie.isFavorite = !movie.isFavorite;
   }
 
-  // ✅ GitHub Pages-safe poster URL resolver
+  // ✅ key fix: NEVER return "/assets/..." on GitHub Pages
   posterSrc(movie: any): string {
     let p: string = movie?.ImagePath || '';
     if (!p) return this.placeholder;
 
-    // GitHub Pages is https; avoid mixed content
+    // avoid mixed content if any URLs are http
     if (p.startsWith('http://')) p = 'https://' + p.slice('http://'.length);
-
-    // absolute https image
     if (p.startsWith('https://')) return p;
 
-    // remove leading "/" so baseHref (/myFlix-Angular-client/) is respected
-    const cleaned = p.replace(/^\/+/, '');
-    try {
-      return new URL(cleaned, document.baseURI).toString();
-    } catch {
-      return this.placeholder;
-    }
+    // if backend returns "/assets/..." strip the leading slash
+    if (p.startsWith('/assets/')) return p.slice(1);
+
+    // if already "assets/..." use as-is (base-href will handle repo subfolder)
+    if (p.startsWith('assets/')) return p;
+
+    // fallback: strip leading slash for any other relative path
+    return p.replace(/^\/+/, '');
   }
 
   onPosterError(e: Event): void {

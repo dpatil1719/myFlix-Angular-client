@@ -32,6 +32,19 @@ export class MovieCardComponent implements OnInit {
   isLoading = false;
   errorMsg = '';
 
+  // inline placeholder (prevents broken image icons)
+  private readonly placeholder =
+    'data:image/svg+xml;charset=UTF-8,' +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="600" height="900">
+        <rect width="100%" height="100%" fill="#f3f3f3"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Arial" font-size="28" fill="#888">
+          No Poster
+        </text>
+      </svg>
+    `);
+
   constructor(
     public fetchApiData: FetchApiDataService,
     public dialog: MatDialog,
@@ -54,7 +67,6 @@ export class MovieCardComponent implements OnInit {
         this.movies = (Array.isArray(list) ? list : []).filter((m: any) => m && typeof m === 'object');
 
         this.isLoading = false;
-        console.log('Movies loaded:', this.movies.length);
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -73,7 +85,6 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  // ✅ removes "CF Sample:" prefix so UI matches your screenshot
   displayTitle(title: string): string {
     return (title || '').replace(/^CF Sample:\s*/i, '').trim();
   }
@@ -94,10 +105,29 @@ export class MovieCardComponent implements OnInit {
     movie.isFavorite = !movie.isFavorite;
   }
 
+  // ✅ GitHub Pages-safe poster URL resolver
   posterSrc(movie: any): string {
-    const p = movie?.ImagePath;
-    if (!p) return '/assets/posters/placeholder.jpg';
-    return p.startsWith('http') ? p : (p.startsWith('/') ? p : `/${p}`);
+    let p: string = movie?.ImagePath || '';
+    if (!p) return this.placeholder;
+
+    // GitHub Pages is https; avoid mixed content
+    if (p.startsWith('http://')) p = 'https://' + p.slice('http://'.length);
+
+    // absolute https image
+    if (p.startsWith('https://')) return p;
+
+    // remove leading "/" so baseHref (/myFlix-Angular-client/) is respected
+    const cleaned = p.replace(/^\/+/, '');
+    try {
+      return new URL(cleaned, document.baseURI).toString();
+    } catch {
+      return this.placeholder;
+    }
+  }
+
+  onPosterError(e: Event): void {
+    const img = e.target as HTMLImageElement;
+    if (img && img.src !== this.placeholder) img.src = this.placeholder;
   }
 
   goProfile(): void {

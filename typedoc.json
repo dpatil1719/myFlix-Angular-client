@@ -1,0 +1,9 @@
+{
+  "entryPoints": ["src/app"],
+  "entryPointStrategy": "expand",
+  "out": "docs/typedoc",
+  "exclude": ["**/*.spec.ts", "**/node_modules/**", "src/environments/**"],
+  "tsconfig": "tsconfig.app.json",
+  "name": "myFlix Angular Client Documentation",
+  "includeVersion": true
+}

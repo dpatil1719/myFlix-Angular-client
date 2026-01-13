@@ -1,0 +1,48 @@
+<div class="movies-page">
+  <div class="topbar">
+    <h2 class="page-title">Movies</h2>
+
+    <div class="topbar-actions">
+      <button mat-stroked-button (click)="goProfile()">
+        <mat-icon>person</mat-icon>
+        Profile
+      </button>
+
+      <button mat-stroked-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <p *ngIf="isLoading">Loading movies...</p>
+
+  <p *ngIf="!isLoading && errorMsg" class="error">
+    {{ errorMsg }}
+  </p>
+
+  <p *ngIf="!isLoading && !errorMsg && movies.length === 0">
+    No movies available.
+  </p>
+
+  <div class="movies-grid" *ngIf="!isLoading && !errorMsg && movies.length > 0">
+    <mat-card class="movie-card" *ngFor="let movie of movies; trackBy: trackByTitle">
+      <mat-card-header class="movie-header">
+        <mat-card-title class="movie-title">{{ displayTitle(movie.Title) }}</mat-card-title>
+        <mat-card-subtitle class="movie-subtitle">Directed by: {{ movie.Director?.Name }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <img class="movie-poster" [src]="posterSrc(movie)" [alt]="displayTitle(movie.Title)" />
+
+      <mat-card-actions class="movie-actions">
+        <button mat-button (click)="openGenreDialog(movie.Genre)">Genre</button>
+        <button mat-button (click)="openDirectorDialog(movie.Director)">Director</button>
+        <button mat-button (click)="openSynopsisDialog(movie)">Synopsis</button>
+
+        <button class="fav-btn" mat-icon-button (click)="toggleFavorite(movie)" aria-label="favorite">
+          <mat-icon>{{ movie.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

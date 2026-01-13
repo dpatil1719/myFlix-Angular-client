@@ -1,0 +1,47 @@
+<div class="profile-page">
+  <div class="topbar">
+    <h2 class="page-title">Profile</h2>
+
+    <div class="topbar-actions">
+      <button mat-stroked-button (click)="goMovies()">Back to Movies</button>
+      <button mat-stroked-button color="warn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <mat-card class="profile-card" *ngIf="user; else noUser">
+    <mat-card-title>Update your details</mat-card-title>
+    <mat-card-content>
+      <form class="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput [(ngModel)]="editData.Username" name="Username" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="editData.Email" name="Email" type="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Birthday</mat-label>
+          <input matInput [(ngModel)]="editData.Birthday" name="Birthday" placeholder="YYYY-MM-DD" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>New Password</mat-label>
+          <input matInput [(ngModel)]="editData.Password" name="Password" type="password" />
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="actions">
+      <button mat-raised-button color="primary" (click)="saveProfile()" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save changes' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <ng-template #noUser>
+    <p>No user found. Please login again.</p>
+  </ng-template>
+</div>

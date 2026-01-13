@@ -1,0 +1,4 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* your global styles can go here */
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
